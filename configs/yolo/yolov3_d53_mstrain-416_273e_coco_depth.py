@@ -13,7 +13,7 @@ model = dict(
     bbox_head=dict(
         num_classes=1))
 train_pipeline = [
-    dict(type='LoadImageFromFile'),
+    dict(type='LoadImageFromFile_depth'),
     dict(type='LoadAnnotations', with_bbox=True),
     dict(
         type='Expand',
@@ -32,7 +32,7 @@ train_pipeline = [
     dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels'])
 ]
 test_pipeline = [
-    dict(type='LoadImageFromFile'),
+    dict(type='LoadImageFromFile_depth'),
     dict(
         type='MultiScaleFlipAug',
         img_scale=(416, 416),
