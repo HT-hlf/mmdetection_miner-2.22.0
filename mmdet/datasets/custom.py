@@ -62,6 +62,7 @@ class CustomDataset(Dataset):
                  classes=None,
                  data_root=None,
                  img_prefix='',
+                 img_prefix_depth='',
                  seg_prefix=None,
                  proposal_file=None,
                  test_mode=False,
@@ -70,6 +71,7 @@ class CustomDataset(Dataset):
         self.ann_file = ann_file
         self.data_root = data_root
         self.img_prefix = img_prefix
+        self.img_prefix_depth = img_prefix_depth
         self.seg_prefix = seg_prefix
         self.proposal_file = proposal_file
         self.test_mode = test_mode
@@ -83,6 +85,8 @@ class CustomDataset(Dataset):
                 self.ann_file = osp.join(self.data_root, self.ann_file)
             if not (self.img_prefix is None or osp.isabs(self.img_prefix)):
                 self.img_prefix = osp.join(self.data_root, self.img_prefix)
+            if not (self.img_prefix_depth is None or osp.isabs(self.img_prefix_depth)):
+                self.img_prefix_depth = osp.join(self.data_root, self.img_prefix_depth)
             if not (self.seg_prefix is None or osp.isabs(self.seg_prefix)):
                 self.seg_prefix = osp.join(self.data_root, self.seg_prefix)
             if not (self.proposal_file is None
@@ -167,6 +171,7 @@ class CustomDataset(Dataset):
     def pre_pipeline(self, results):
         """Prepare results dict for pipeline."""
         results['img_prefix'] = self.img_prefix
+        results['img_prefix_depth'] = self.img_prefix_depth
         results['seg_prefix'] = self.seg_prefix
         results['proposal_file'] = self.proposal_file
         results['bbox_fields'] = []

@@ -1,11 +1,10 @@
 _base_ = './yolov3_d53_mstrain-608_273e_coco.py'
 # dataset settings
-img_norm_cfg = dict(mean=[0,], std=[255.,], to_rgb=True)
-
+img_norm_cfg = dict(mean=[0, 0, 0,0], std=[255., 255., 255., 255.], to_rgb=True)
 model = dict(
     type='YOLOV3',
     backbone=dict(
-        type='Darknet_depth',
+        type='Darknet_rgb_depth_a',
         depth=53,
         out_indices=(3, 4, 5),
         pretrained=None,
@@ -13,7 +12,7 @@ model = dict(
     bbox_head=dict(
         num_classes=1))
 train_pipeline = [
-    dict(type='LoadImageFromFile_depth'),
+    dict(type='LoadImageFromFile_rgb_depth'),
     dict(type='LoadAnnotations', with_bbox=True),
     dict(
         type='Expand',
@@ -32,7 +31,7 @@ train_pipeline = [
     dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels'])
 ]
 test_pipeline = [
-    dict(type='LoadImageFromFile_depth'),
+    dict(type='LoadImageFromFile_rgb_depth'),
     dict(
         type='MultiScaleFlipAug',
         img_scale=(416, 416),
@@ -55,26 +54,29 @@ dataset_type = 'CocoDataset'
 data_root = '../data/ht_cumt_rgbd/'
 classes=('person',)
 data = dict(
-    samples_per_gpu=48,
+    samples_per_gpu=8,
     workers_per_gpu=4,
     train=dict(
         type=dataset_type,
         ann_file=data_root + 'annotations/instances_train2014.json',
-        img_prefix=data_root + 'depth_train/',
+        img_prefix=data_root + 'train2014/',
+        img_prefix_depth=data_root + 'depth_train/',
         pipeline=train_pipeline,
     classes=classes),
     val=dict(
         type=dataset_type,
         ann_file=data_root + 'annotations/instances_val2014.json',
-        img_prefix=data_root + 'depth_val/',
+        img_prefix=data_root + 'val2014/',
+        img_prefix_depth=data_root + 'depth_val/',
         pipeline=test_pipeline,
     classes=classes),
     test=dict(
         type=dataset_type,
         ann_file=data_root + 'annotations/instances_val2014.json',
-        img_prefix=data_root + 'depth_val/',
+        img_prefix=data_root + 'val2014/',
+        img_prefix_depth=data_root + 'depth_val/',
         pipeline=test_pipeline,
     classes=classes))
 # optimizer
-optimizer = dict(type='SGD', lr=0.000750, momentum=0.9, weight_decay=0.0005)
+optimizer = dict(type='SGD', lr=0.000125, momentum=0.9, weight_decay=0.0005)
 optimizer_config = dict(grad_clip=dict(max_norm=35, norm_type=2))

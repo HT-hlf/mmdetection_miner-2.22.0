@@ -40,3 +40,33 @@ data = dict(
     train=dict(pipeline=train_pipeline),
     val=dict(pipeline=test_pipeline),
     test=dict(pipeline=test_pipeline))
+
+# dataset settings
+dataset_type = 'CocoDataset'
+data_root = '../data/ht_cumt_rgbd/'
+classes=('person',)
+data = dict(
+    samples_per_gpu=48,
+    workers_per_gpu=4,
+    train=dict(
+        type=dataset_type,
+        ann_file=data_root + 'annotations/instances_train2014.json',
+        img_prefix=data_root + 'train2014/',
+        pipeline=train_pipeline,
+        classes=classes
+    ),
+    val=dict(
+        type=dataset_type,
+        ann_file=data_root + 'annotations/instances_val2014.json',
+        img_prefix=data_root + 'val2014/',
+        pipeline=test_pipeline,
+        classes=classes),
+    test=dict(
+        type=dataset_type,
+        ann_file=data_root + 'annotations/instances_val2014.json',
+        img_prefix=data_root + 'val2014/',
+        pipeline=test_pipeline,
+        classes=classes))
+# optimizer
+optimizer = dict(type='SGD', lr=0.000125, momentum=0.9, weight_decay=0.0005)
+optimizer_config = dict(grad_clip=dict(max_norm=35, norm_type=2))
