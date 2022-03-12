@@ -58,7 +58,7 @@ model = dict(
         max_per_img=100))
 # dataset settings
 dataset_type = 'CocoDataset'
-data_root = '../data/ht_cumt_rgbd/'
+data_root = '..\data\ht_cumt_rgbd/'
 img_norm_cfg = dict(mean=[0, 0, 0], std=[255., 255., 255.], to_rgb=True)
 train_pipeline = [
     dict(type='LoadImageFromFile', to_float32=True),
@@ -97,28 +97,29 @@ test_pipeline = [
 ]
 classes=('person',)
 data = dict(
-    samples_per_gpu=8,
+    samples_per_gpu=48,
     workers_per_gpu=4,
     train=dict(
         type=dataset_type,
         ann_file=data_root + 'annotations/instances_train2014.json',
         img_prefix=data_root + 'train2014/',
         pipeline=train_pipeline,
-    classes=classes),
+        classes=classes
+    ),
     val=dict(
         type=dataset_type,
         ann_file=data_root + 'annotations/instances_val2014.json',
         img_prefix=data_root + 'val2014/',
         pipeline=test_pipeline,
-    classes=classes),
+        classes=classes),
     test=dict(
         type=dataset_type,
         ann_file=data_root + 'annotations/instances_val2014.json',
         img_prefix=data_root + 'val2014/',
         pipeline=test_pipeline,
-    classes=classes))
+        classes=classes))
 # optimizer
-optimizer = dict(type='SGD', lr=0.000125, momentum=0.9, weight_decay=0.0005)
+optimizer = dict(type='SGD', lr=0.000750, momentum=0.9, weight_decay=0.0005)
 optimizer_config = dict(grad_clip=dict(max_norm=35, norm_type=2))
 # learning policy
 lr_config = dict(
