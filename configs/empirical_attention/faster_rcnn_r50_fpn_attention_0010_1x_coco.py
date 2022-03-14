@@ -11,3 +11,4 @@ model = dict(
             stages=(False, False, True, True),
             position='after_conv2')
     ]))
+
