@@ -41,8 +41,12 @@ class SingleStageDetector(BaseDetector):
     def extract_feat(self, img):
         """Directly extract features from the backbone+neck."""
         x = self.backbone(img)
+        # from tools.feature_visualization import draw_feature_map
+        # draw_feature_map(x, img)
         if self.with_neck:
             x = self.neck(x)
+            # from tools.feature_visualization import draw_feature_map
+            # draw_feature_map(x,img)
         return x
 
     def forward_dummy(self, img):
