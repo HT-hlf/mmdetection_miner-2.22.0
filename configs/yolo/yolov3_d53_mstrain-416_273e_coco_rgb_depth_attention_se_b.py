@@ -4,7 +4,7 @@ img_norm_cfg = dict(mean=[0, 0, 0,0], std=[255., 255., 255., 255.], to_rgb=True)
 model = dict(
     type='YOLOV3',
     backbone=dict(
-        type='Darknet_rgb_depth_attention_se_b',
+        type='Darknet_rgb_depth_attention_se_a',
         depth=53,
         out_indices=(3, 4, 5),
         pretrained=None,
