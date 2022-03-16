@@ -29,6 +29,19 @@ def featuremap_2_heatmap(feature_map):
 
     return heatmap
 
+def featuremap_2_heatmap_ht1(feature_map):
+    assert isinstance(feature_map, torch.Tensor)
+    feature_map = feature_map.detach()
+    heatmap = feature_map[:,0,:,:]*0
+    for c in range(feature_map.shape[1]):
+        heatmap+=feature_map[:,c,:,:]
+    heatmap = heatmap.cpu().numpy()
+    heatmap_a = np.mean(heatmap, axis=0)
+
+    heatmap = np.maximum(heatmap, 0)
+    heatmap /= np.max(heatmap_a)
+
+    return heatmap
 def featuremap_2_heatmap_ht(feature_map):
     assert isinstance(feature_map, torch.Tensor)
     feature_map = feature_map.detach()
