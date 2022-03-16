@@ -1174,7 +1174,7 @@ class Darknet_rgb_depth_attention_se_b(BaseModule):
 
         cfg = dict(conv_cfg=conv_cfg, norm_cfg=norm_cfg, act_cfg=act_cfg)
 
-        self.se_1 = SE(4,16)  #
+        self.se_1 = SE(32,64)  #
 
         self.conv1 = ConvModule(3, 24, 3, padding=1, **cfg)
         self.conv1_depth = ConvModule(1, 8, 3, padding=1, **cfg)
