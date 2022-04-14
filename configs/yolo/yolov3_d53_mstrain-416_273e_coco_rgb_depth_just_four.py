@@ -25,11 +25,7 @@ train_pipeline = [
         min_crop_size=0.3),
     dict(type='Resize', img_scale=[(320, 320), (416, 416)], keep_ratio=True),
     dict(type='RandomFlip', flip_ratio=0.5),
-<<<<<<< HEAD
 dict(type='PhotoMetricDistortion_rgb_depth'),
-=======
-    dict(type='PhotoMetricDistortion_rgb_depth'),
->>>>>>> d42546bd433698a80d76e769b25d99b768cddbe1
     dict(type='Normalize', **img_norm_cfg),
     dict(type='Pad', size_divisor=32),
     dict(type='DefaultFormatBundle'),
