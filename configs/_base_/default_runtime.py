@@ -13,11 +13,9 @@ dist_params = dict(backend='nccl')
 log_level = 'INFO'
 load_from = None
 resume_from = None
-<<<<<<< HEAD
+
 workflow = [('train', 1),]
-=======
-workflow = [('train', 1)]
->>>>>>> 3392453c353565f33b3b75cc252033402efc4dea
+
 
 # disable opencv multithreading to avoid system being overloaded
 opencv_num_threads = 0
