@@ -4,7 +4,7 @@ img_norm_cfg = dict(mean=[0, 0, 0,0], std=[255., 255., 255., 255.], to_rgb=True)
 model = dict(
     type='YOLOV3',
     backbone=dict(
-        type='Darknet_rgb_depth_attention_se_a',
+        type='Darknet_rgb_depth_attention_se_b',
         depth=53,
         out_indices=(3, 4, 5),
         pretrained=None,
@@ -25,6 +25,7 @@ train_pipeline = [
         min_crop_size=0.3),
     dict(type='Resize', img_scale=[(320, 320), (416, 416)], keep_ratio=True),
     dict(type='RandomFlip', flip_ratio=0.5),
+    dict(type='PhotoMetricDistortion_rgb_depth'),
     dict(type='Normalize', **img_norm_cfg),
     dict(type='Pad', size_divisor=32),
     dict(type='DefaultFormatBundle'),

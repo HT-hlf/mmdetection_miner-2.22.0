@@ -11,7 +11,7 @@ from .loading import (LoadAnnotations, LoadImageFromFile,LoadImageFromFile_depth
                       LoadProposals)
 from .test_time_aug import MultiScaleFlipAug
 from .transforms import (Albu, CutOut, Expand, MinIoURandomCrop, MixUp, Mosaic,
-                         Normalize, Pad, PhotoMetricDistortion, RandomAffine,
+                         Normalize, Pad, PhotoMetricDistortion,PhotoMetricDistortion_rgb_depth, RandomAffine,
                          RandomCenterCropPad, RandomCrop, RandomFlip,
                          RandomShift, Resize, SegRescale, YOLOXHSVRandomAug)
 

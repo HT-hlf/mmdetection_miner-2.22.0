@@ -340,7 +340,7 @@ class BaseDetector(BaseModule, metaclass=ABCMeta):
             bboxes,
             labels,
             segms,
-            class_names=self.CLASSES,
+            class_names=('miner',),
             score_thr=score_thr,
             bbox_color=bbox_color,
             text_color=text_color,
@@ -351,6 +351,22 @@ class BaseDetector(BaseModule, metaclass=ABCMeta):
             show=show,
             wait_time=wait_time,
             out_file=out_file)
+        # img = imshow_det_bboxes(
+        #     img,
+        #     bboxes,
+        #     labels,
+        #     segms,
+        #     class_names=self.CLASSES,
+        #     score_thr=score_thr,
+        #     bbox_color=bbox_color,
+        #     text_color=text_color,
+        #     mask_color=mask_color,
+        #     thickness=thickness,
+        #     font_size=font_size,
+        #     win_name=win_name,
+        #     show=show,
+        #     wait_time=wait_time,
+        #     out_file=out_file)
 
         if not (show or out_file):
             return img
