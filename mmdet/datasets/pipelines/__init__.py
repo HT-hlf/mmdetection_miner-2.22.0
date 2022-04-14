@@ -21,7 +21,7 @@ __all__ = [
     'LoadImageFromFile', 'LoadImageFromFile_depth','LoadImageFromFile_rgb_depth','LoadImageFromWebcam', 'LoadPanopticAnnotations',
     'LoadMultiChannelImageFromFiles', 'LoadProposals', 'MultiScaleFlipAug',
     'Resize', 'RandomFlip', 'Pad', 'RandomCrop', 'Normalize', 'SegRescale',
-    'MinIoURandomCrop', 'Expand', 'PhotoMetricDistortion', 'Albu',
+    'MinIoURandomCrop', 'Expand', 'PhotoMetricDistortion', 'PhotoMetricDistortion_rgb_depth','Albu',
     'InstaBoost', 'RandomCenterCropPad', 'AutoAugment', 'CutOut', 'Shear',
     'Rotate', 'ColorTransform', 'EqualizeTransform', 'BrightnessTransform',
     'ContrastTransform', 'Translate', 'RandomShift', 'Mosaic', 'MixUp',

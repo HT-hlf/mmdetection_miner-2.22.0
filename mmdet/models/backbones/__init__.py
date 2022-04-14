@@ -1,6 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from .csp_darknet import CSPDarknet
-from .darknet import Darknet,Darknet_depth,Darknet_rgb_depth_a
+from .darknet import Darknet,Darknet_depth,Darknet_rgb_depth_a,Darknet_rgb_depth_attention_se_c
 from .detectors_resnet import DetectoRS_ResNet
 from .detectors_resnext import DetectoRS_ResNeXt
 from .hourglass import HourglassNet
@@ -19,6 +19,6 @@ from .trident_resnet import TridentResNet
 __all__ = [
     'RegNet', 'ResNet', 'ResNetV1d', 'ResNeXt', 'SSDVGG', 'HRNet',
     'MobileNetV2', 'Res2Net', 'HourglassNet', 'DetectoRS_ResNet',
-    'DetectoRS_ResNeXt', 'Darknet','Darknet_depth','Darknet_rgb_depth_a', 'ResNeSt', 'TridentResNet', 'CSPDarknet',
+    'DetectoRS_ResNeXt', 'Darknet','Darknet_depth','Darknet_rgb_depth_a', 'Darknet_rgb_depth_attention_se_c','ResNeSt', 'TridentResNet', 'CSPDarknet',
     'SwinTransformer', 'PyramidVisionTransformer', 'PyramidVisionTransformerV2'
 ]

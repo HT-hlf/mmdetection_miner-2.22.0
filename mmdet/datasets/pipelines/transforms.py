@@ -1171,6 +1171,137 @@ class PhotoMetricDistortion_rgb_depth:
 
 
 @PIPELINES.register_module()
+class PhotoMetricDistortion_rgb_depth:
+    """Apply photometric distortion to image sequentially, every transformation
+    is applied with a probability of 0.5. The position of random contrast is in
+    second or second to last.
+
+    1. random brightness
+    2. random contrast (mode 0)
+    3. convert color from BGR to HSV
+    4. random saturation
+    5. random hue
+    6. convert color from HSV to BGR
+    7. random contrast (mode 1)
+    8. randomly swap channels
+
+    Args:
+        brightness_delta (int): delta of brightness.
+        contrast_range (tuple): range of contrast.
+        saturation_range (tuple): range of saturation.
+        hue_delta (int): delta of hue.
+    """
+
+    def __init__(self,
+                 brightness_delta=32,
+                 contrast_range=(0.5, 1.5),
+                 saturation_range=(0.5, 1.5),
+                 hue_delta=18):
+        self.brightness_delta = brightness_delta
+        self.contrast_lower, self.contrast_upper = contrast_range
+        self.saturation_lower, self.saturation_upper = saturation_range
+        self.hue_delta = hue_delta
+
+    def __call__(self, results):
+        """Call function to perform photometric distortion on images.
+
+        Args:
+            results (dict): Result dict from loading pipeline.
+
+        Returns:
+            dict: Result dict with images distorted.
+        """
+
+        if 'img_fields' in results:
+            assert results['img_fields'] == ['img'], \
+                'Only single img_fields is allowed'
+        img = results['img']
+        img_filename=results['ori_filename']
+        img = img.astype(np.float32)
+        rgb = img[:, :, 0:3]
+        if img_filename.split('_')[0]!='rgb':
+            if random.randint(2):
+                delta = random.uniform(-55, 55)
+                rgb += delta
+        else:
+            if random.randint(2):
+                delta = random.uniform(-self.brightness_delta,
+                                       self.brightness_delta)
+                rgb += delta
+
+        # no_b_path=r'G:\mmdetection_miner\PhotoMetricDistortion_rgb_depth_test\no_bright'+'/'+img_filename
+
+        # import copy
+        # rgb_no_b=copy.deepcopy(rgb)
+        # rgb = rgb.astype(np.float32)
+        # random brightness
+
+        # mmcv.imshow(rgb,img_filename,wait_time=0)
+        # mmcv.imwrite(rgb,no_b_path)
+
+        # from numpy import hstack
+        # rgb_two=np.hstack((rgb_no_b, rgb))
+        # # mmcv.imshow(rgb,img_filename,wait_time=0)
+        # b_path = r'G:\mmdetection_miner\PhotoMetricDistortion_rgb_depth_test\bright' + '/'+str(delta) + '_'+img_filename
+        # mmcv.imwrite(rgb_two, b_path)
+
+
+
+        # mode == 0 --> do random contrast first
+        # mode == 1 --> do random contrast last
+        mode = random.randint(2)
+        if mode == 1:
+            if random.randint(2):
+                alpha = random.uniform(self.contrast_lower,
+                                       self.contrast_upper)
+                rgb *= alpha
+
+        # convert color from BGR to HSV
+        rgb = mmcv.bgr2hsv(rgb)
+
+        # random saturation
+        if random.randint(2):
+            rgb[..., 1] *= random.uniform(self.saturation_lower,
+                                          self.saturation_upper)
+
+        # random hue
+        if random.randint(2):
+            rgb[..., 0] += random.uniform(-self.hue_delta, self.hue_delta)
+            rgb[..., 0][rgb[..., 0] > 360] -= 360
+            rgb[..., 0][rgb[..., 0] < 0] += 360
+
+        # convert color from HSV to BGR
+        rgb = mmcv.hsv2bgr(rgb)
+
+        # random contrast
+        if mode == 0:
+            if random.randint(2):
+                alpha = random.uniform(self.contrast_lower,
+                                       self.contrast_upper)
+                rgb *= alpha
+
+        # randomly swap channels
+        if random.randint(2):
+            rgb = rgb[..., random.permutation(3)]
+
+
+
+        img[:,:,0:3] = rgb
+        results['img'] = img
+        return results
+
+    def __repr__(self):
+        repr_str = self.__class__.__name__
+        repr_str += f'(\nbrightness_delta={self.brightness_delta},\n'
+        repr_str += 'contrast_range='
+        repr_str += f'{(self.contrast_lower, self.contrast_upper)},\n'
+        repr_str += 'saturation_range='
+        repr_str += f'{(self.saturation_lower, self.saturation_upper)},\n'
+        repr_str += f'hue_delta={self.hue_delta})'
+        return repr_str
+
+
+@PIPELINES.register_module()
 class Expand:
     """Random expand the image & bboxes.
 

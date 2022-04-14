@@ -25,7 +25,11 @@ train_pipeline = [
         min_crop_size=0.3),
     dict(type='Resize', img_scale=[(320, 320), (416, 416)], keep_ratio=True),
     dict(type='RandomFlip', flip_ratio=0.5),
+<<<<<<< HEAD
 dict(type='PhotoMetricDistortion_rgb_depth'),
+=======
+    dict(type='PhotoMetricDistortion_rgb_depth'),
+>>>>>>> d42546bd433698a80d76e769b25d99b768cddbe1
     dict(type='Normalize', **img_norm_cfg),
     dict(type='Pad', size_divisor=32),
     dict(type='DefaultFormatBundle'),
@@ -55,8 +59,8 @@ dataset_type = 'CocoDataset'
 data_root = '../data/ht_cumt_rgbd/'
 classes=('person',)
 data = dict(
-    samples_per_gpu=8,
-    workers_per_gpu=4,
+    samples_per_gpu=48,
+    workers_per_gpu=8,
     train=dict(
         type=dataset_type,
         ann_file=data_root + 'annotations/instances_train2014.json',
@@ -79,5 +83,5 @@ data = dict(
         pipeline=test_pipeline,
     classes=classes))
 # optimizer
-optimizer = dict(type='SGD', lr=0.000125, momentum=0.9, weight_decay=0.0005)
+optimizer = dict(type='SGD', lr=0.000750, momentum=0.9, weight_decay=0.0005)
 optimizer_config = dict(grad_clip=dict(max_norm=35, norm_type=2))
