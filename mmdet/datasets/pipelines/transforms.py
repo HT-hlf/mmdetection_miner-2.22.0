@@ -1351,15 +1351,15 @@ class PhotoMetricDistortion_rgb_depth:
         rgb = img[:, :, 0:3]
         depth=img[:, :, 3:]
         # if img_filename.split('_')[0]!='rgb':
-        if random.randint(2):
-            if random.randint(1):
-                depth=np.zeros_like(depth, dtype=np.float32)
-            else:
-                delta = random.uniform(-self.brightness_delta,
-                                       self.brightness_delta)
-                rgb += delta
+        rand_count=random.randint(6)
+        if rand_count==1:
+            depth=np.zeros_like(depth, dtype=np.float32)
+        # elif rand_count==2:
+        #     delta = random.uniform(-55, 55)
+        #     rgb += delta
         else:
-            delta = random.uniform(-55, 55)
+            delta = random.uniform(-self.brightness_delta,
+                                   self.brightness_delta)
             rgb += delta
 
         # no_b_path=r'G:\mmdetection_miner\PhotoMetricDistortion_rgb_depth_test\no_bright'+'/'+img_filename
