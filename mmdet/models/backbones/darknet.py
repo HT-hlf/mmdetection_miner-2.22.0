@@ -33,6 +33,24 @@ class SE(nn.Module):
         y = self.fc(y).view(b, c, 1, 1)
         return x * y
 
+
+class SE_a(nn.Module):
+    def __init__(self, channel, ratio=16):
+        super(SE, self).__init__()
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
+        self.fc = nn.Sequential(
+                nn.Linear(channel, ratio, bias=False),
+                nn.ReLU(inplace=True),
+                # nn.Linear(ratio, channel, bias=False),
+                nn.Linear(ratio, 2, bias=False),
+                nn.Sigmoid()
+        )
+
+    def forward(self, x):
+        b, c, _, _ = x.size()
+        y = self.avg_pool(x).view(b, c)
+        y = self.fc(y).view(b, c, 1, 1)
+        return x * y
 # ————————————————
 # 版权声明：本文为CSDN博主「你的陈某某」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
 # 原文链接：https://blog.csdn.net/weixin_45679938/article/details/122339433
@@ -1647,6 +1665,7 @@ class Darknet_rgb_depth_attention_se_c(BaseModule):
         return model
 
 
+
 @BACKBONES.register_module()
 class Darknet_rgb_depth_attention_se_d(BaseModule):
     """Darknet backbone.
@@ -1685,9 +1704,9 @@ class Darknet_rgb_depth_attention_se_d(BaseModule):
 
     # Dict(depth: (layers, channels))
     arch_settings = {
-        53: ((1, 2, 8, 8, 4), ((24, 48), (48, 96), (128, 256), (256, 512),
+        53: ((1, 2, 8, 8, 4), ((24, 48), (64, 128), (128, 256), (256, 512),
                                (512, 1024))),
-        'depth_channel':((1, 2), ((8, 16), (16, 32)))
+        'depth_channel':((1,), ((8, 16), ))
     }
 
     def __init__(self,
@@ -1712,7 +1731,7 @@ class Darknet_rgb_depth_attention_se_d(BaseModule):
 
         cfg = dict(conv_cfg=conv_cfg, norm_cfg=norm_cfg, act_cfg=act_cfg)
 
-        self.se_1 = SE(128, 256)  #
+        self.se_1 = SE(64, 128)  #
 
         self.conv1 = ConvModule(3, 24, 3, padding=1, **cfg)
         self.conv1_depth = ConvModule(1, 8, 3, padding=1, **cfg)
@@ -1764,13 +1783,13 @@ class Darknet_rgb_depth_attention_se_d(BaseModule):
         for i, layer_name in enumerate(self.cr_blocks_depth):
             cr_block_depth = getattr(self, layer_name)
             depth_channel = cr_block_depth(depth_channel)
-            if i == 2:
+            if i == 1:
                 outs_depth.append(depth_channel)
 
         for i, layer_name in enumerate(self.cr_blocks):
             cr_block = getattr(self, layer_name)
             rgb = cr_block(rgb)
-            if i ==2:
+            if i ==1:
                 rgb= cat([rgb,outs_depth[0]],1)
                 rgb = self.se_1(rgb)
             if i in self.out_indices:
