@@ -52,7 +52,7 @@ data = dict(
     test=dict(pipeline=test_pipeline))
 # dataset settings
 dataset_type = 'CocoDataset'
-data_root = '../data/ht_cumt_depth/'
+data_root = '../data/ht_cumt_rgbd/'
 classes=('person',)
 data = dict(
     samples_per_gpu=48,
