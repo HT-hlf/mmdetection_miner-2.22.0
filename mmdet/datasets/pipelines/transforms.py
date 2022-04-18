@@ -1352,7 +1352,7 @@ class PhotoMetricDistortion_rgb_depth:
         depth=img[:, :, 3:]
         # if img_filename.split('_')[0]!='rgb':
         # rand_count=random.randint(4)
-        if random.randint(5):
+        if random.randint(10):
             delta = random.uniform(-55, 55)
             rgb += delta
         else:
