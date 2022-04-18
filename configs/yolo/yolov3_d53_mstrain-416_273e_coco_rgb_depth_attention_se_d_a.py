@@ -4,7 +4,7 @@ img_norm_cfg = dict(mean=[0, 0, 0,0], std=[255., 255., 255., 255.], to_rgb=True)
 model = dict(
     type='YOLOV3',
     backbone=dict(
-        type='Darknet_rgb_depth_attention_se_b',
+        type='Darknet_rgb_depth_attention_se_d_a',
         depth=53,
         out_indices=(3, 4, 5),
         pretrained=None,
@@ -55,7 +55,7 @@ dataset_type = 'CocoDataset'
 data_root = '../data/ht_cumt_rgbd/'
 classes=('person',)
 data = dict(
-    samples_per_gpu=7,
+    samples_per_gpu=8,
     workers_per_gpu=4,
     train=dict(
         type=dataset_type,
@@ -79,5 +79,5 @@ data = dict(
         pipeline=test_pipeline,
     classes=classes))
 # optimizer
-optimizer = dict(type='SGD', lr=0.000125, momentum=0.9, weight_decay=0.0005)
+optimizer = dict(type='SGD', lr=0.000750, momentum=0.9, weight_decay=0.0005)
 optimizer_config = dict(grad_clip=dict(max_norm=35, norm_type=2))
