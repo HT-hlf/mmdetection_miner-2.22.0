@@ -79,6 +79,44 @@ class ChannelAttention(nn.Module):
         out = avg_out + max_out
         return self.sigmoid(out)
 
+class ChannelAttention_avg(nn.Module):
+    def __init__(self, in_planes, ratio=8):
+        super(ChannelAttention_avg, self).__init__()
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
+        # self.max_pool = nn.AdaptiveMaxPool2d(1)
+
+        # 利用1x1卷积代替全连接
+        self.fc1   = nn.Conv2d(in_planes, ratio, 1, bias=False)
+        self.relu1 = nn.ReLU()
+        # self.fc2   = nn.Conv2d(ratio, in_planes, 1, bias=False)
+
+        self.sigmoid = nn.Sigmoid()
+
+    def forward(self, x):
+        avg_out = self.fc2(self.relu1(self.fc1(self.avg_pool(x))))
+        # max_out = self.fc2(self.relu1(self.fc1(self.max_pool(x))))
+        return self.sigmoid(avg_out)
+
+class ChannelAttention_max(nn.Module):
+    def __init__(self, in_planes, ratio=8):
+        super(ChannelAttention_max, self).__init__()
+        # self.avg_pool = nn.AdaptiveAvgPool2d(1)
+        self.max_pool = nn.AdaptiveMaxPool2d(1)
+
+        # 利用1x1卷积代替全连接
+        # self.fc1   = nn.Conv2d(in_planes, ratio, 1, bias=False)
+        self.relu1 = nn.ReLU()
+        self.fc2   = nn.Conv2d(ratio, in_planes, 1, bias=False)
+
+        self.sigmoid = nn.Sigmoid()
+
+    def forward(self, x):
+        # avg_out = self.fc2(self.relu1(self.fc1(self.avg_pool(x))))
+        max_out = self.fc2(self.relu1(self.fc1(self.max_pool(x))))
+        return self.sigmoid(max_out)
+
+
+
 class SpatialAttention(nn.Module):
     def __init__(self, kernel_size=7):
         super(SpatialAttention, self).__init__()
@@ -109,6 +147,19 @@ class CBAM(nn.Module):
 # ————————————————
 # 版权声明：本文为CSDN博主「你的陈某某」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
 # 原文链接：https://blog.csdn.net/weixin_45679938/article/details/122339433
+
+
+# CBAM注意力机制
+class CBAM_ht(nn.Module):
+    def __init__(self, channel, ratio=8, kernel_size=7):
+        super(CBAM_ht, self).__init__()
+        self.channelattention = ChannelAttention(channel, ratio=ratio)
+        self.spatialattention = SpatialAttention(kernel_size=kernel_size)
+
+    def forward(self, x):
+        x = x*self.channelattention(x)
+        x = x*self.spatialattention(x)
+        return x
 
 class ResBlock(BaseModule):
     """The basic residual block used in Darknet. Each ResBlock consists of two
