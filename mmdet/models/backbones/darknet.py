@@ -43,7 +43,7 @@ class SE_a(nn.Module):
                 nn.ReLU(inplace=True),
                 # nn.Linear(ratio, channel, bias=False),
                 nn.Linear(ratio, 2, bias=False),
-                nn.Sigmoid()
+                nn.Softmax(dim=1)
         )
 
     def forward(self, x):
@@ -51,14 +51,65 @@ class SE_a(nn.Module):
         y = self.avg_pool(x).view(b, c)
         y = self.fc(y).view(b, 2, 1, 1)
         y1=y[:,0:1,:,:]
-        y1=y1.expand(b, 3*c/4, 1, 1)
+        y1=y1.expand(b, int(3*c/4), 1, 1)
         y2 = y[:, 1:, :, :]
-        y2=y2.expand(b, 1 * c / 4, 1, 1)
+        y2=y2.expand(b, int(c / 4), 1, 1)
         y_sum=torch.cat((y1,y2),1)
         return x * y_sum
 # ————————————————
 # 版权声明：本文为CSDN博主「你的陈某某」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
 # 原文链接：https://blog.csdn.net/weixin_45679938/article/details/122339433
+
+class SKConv(nn.Module):
+    def __init__(self, features, WH, M, G, r, stride=1, L=32):
+        super(SKConv, self).__init__()
+        # z的通道数
+        d = max(int(features / r), L)
+        self.M = M
+        self.features = features
+        self.convs = nn.ModuleList([])
+        for i in range(M):
+            # 使用不同kernel size的卷积
+            self.convs.append(
+                nn.Sequential(
+                    nn.Conv2d(features,
+                              features,
+                              kernel_size=3 + i * 2,
+                              stride=stride,
+                              padding=1 + i,
+                              groups=G), nn.BatchNorm2d(features),
+                    nn.ReLU(inplace=False)))
+
+        self.fc = nn.Linear(features, d)
+        self.fcs = nn.ModuleList([])
+        for i in range(M):
+            self.fcs.append(nn.Linear(d, features))
+        self.softmax = nn.Softmax(dim=1)
+
+    def forward(self, x):
+        for i, conv in enumerate(self.convs):
+            fea = conv(x).unsqueeze_(dim=1)
+            if i == 0:
+                feas = fea
+            else:
+                feas = torch.cat([feas, fea], dim=1)
+        fea_U = torch.sum(feas, dim=1)
+        fea_s = fea_U.mean(-1).mean(-1)
+        fea_z = self.fc(fea_s)
+        for i, fc in enumerate(self.fcs):
+            print(i, fea_z.shape)
+            vector = fc(fea_z).unsqueeze_(dim=1)
+            print(i, vector.shape)
+            if i == 0:
+                attention_vectors = vector
+            else:
+                attention_vectors = torch.cat([attention_vectors, vector],
+                                              dim=1)
+        attention_vectors = self.softmax(attention_vectors)
+        attention_vectors = attention_vectors.unsqueeze(-1).unsqueeze(-1)
+        fea_v = (feas * attention_vectors).sum(dim=1)
+        return fea_v
+
 
 class ChannelAttention(nn.Module):
     def __init__(self, in_planes, ratio=8):
@@ -2300,7 +2351,7 @@ class Darknet_rgb_depth_attention_se_d_a(BaseModule):
 
     # Dict(depth: (layers, channels))
     arch_settings = {
-        53: ((1, 2, 8, 8, 4), ((16, 32), (64, 128), (128, 256), (256, 512),
+        53: ((1, 2, 6, 6, 4), ((16, 32), (64, 128), (128, 256), (256, 512),
                                (512, 1024))),
         'depth_channel':((1,), ((16, 32), ))
     }
@@ -2327,7 +2378,7 @@ class Darknet_rgb_depth_attention_se_d_a(BaseModule):
 
         cfg = dict(conv_cfg=conv_cfg, norm_cfg=norm_cfg, act_cfg=act_cfg)
 
-        self.se_1 = SE_a(64, 128)  #
+        self.se_1 = SE_a(64, 16)  #
 
         self.conv1 = ConvModule(3, 16, 3, padding=1, **cfg)
         self.conv1_depth = ConvModule(1, 16, 3, padding=1, **cfg)
