@@ -55,7 +55,7 @@ dataset_type = 'CocoDataset'
 data_root = '../data/ht_cumt_rgbd/'
 classes=('person',)
 data = dict(
-    samples_per_gpu=48,
+    samples_per_gpu=64,
     workers_per_gpu=4,
     train=dict(
         type=dataset_type,
@@ -79,5 +79,5 @@ data = dict(
         pipeline=test_pipeline,
     classes=classes))
 # optimizer
-optimizer = dict(type='SGD', lr=0.000750, momentum=0.9, weight_decay=0.0005)
+optimizer = dict(type='SGD', lr=0.000875, momentum=0.9, weight_decay=0.0005)
 optimizer_config = dict(grad_clip=dict(max_norm=35, norm_type=2))
